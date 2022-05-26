@@ -1,7 +1,5 @@
-#设置镜像使用的基础镜像
+
 FROM openjdk:8u322-jre-buster
-# 作者
-MAINTAINER niefy <niefy@qq.com>
 #设置镜像暴露的端口 这里要与application.properties中的server.port保持一致
 EXPOSE 80
 #设置容器的挂载卷

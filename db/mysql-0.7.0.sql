@@ -217,7 +217,7 @@ CREATE TABLE `sys_user`  (
 -- ----------------------------
 -- Records of sys_user
 -- ----------------------------
-INSERT INTO `sys_user` VALUES (1, 'admin', 'cdac762d0ba79875489f6a8b430fa8b5dfe0cdd81da38b80f02f33328af7fd4a', 'YzcmCZNvbXocrsz9dm8e', 'niefy@qq.com', '16666666666', 1, 1, '2016-11-11 11:11:11');
+INSERT INTO `sys_user` VALUES (1, 'sa', '589c8e9e904fb58c17e8c231e59f1be71ad7a806dddcc0466d24cc4613611eb1', 'uh7cu5IUwmZuNrgKEsfI', 'tb@126.com', '13666666666', 1, 1, '2022-05-25 00:00:00');
 
 -- ----------------------------
 -- Table structure for sys_user_role

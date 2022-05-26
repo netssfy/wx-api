@@ -7,7 +7,7 @@ import java.util.Objects;
  * MD5加密工具类
  */
 public class MD5Util {
-    private static final String DEFAULT_MD_5_SALT = "fjdsl321312kf349832&*^*903294[JNLIUIK]%fsdjfkl";//加盐md5盐值
+    private static final String DEFAULT_MD_5_SALT = "dfsvjr485697ss125879^%$*454786(JFGERYG]%sifjghe";//加盐md5盐值
 
     /**
      * 获得字符串的md5值
