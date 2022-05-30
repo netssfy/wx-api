@@ -11,7 +11,7 @@ services:
       - mysqldata:/var/lib/mysql
 
   tb-wx-api:
-    image: tb-wx-api:latest
+    image: netssfy/tb-wx-api:latest
     depends_on:
       - mysql
     ports:
@@ -24,11 +24,15 @@ services:
       PROFILE_ACTIVE: dev
 
   tb-wx-manage:
-    image: tb-wx-manage:latest
+    image: netssfy/tb-wx-manage:latest
     depends_on:
       - tb-wx-api
     ports:
       - 443:443
+      - 80:80
+    volumes:
+      - ../my.qzitech.cn.pem:/etc/nginx/conf.d/server.pem
+      - ../my.qzitech.cn.key:/etc/nginx/conf.d/server.key
 
 volumes:
   mysqldata:
