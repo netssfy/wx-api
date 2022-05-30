@@ -31,8 +31,8 @@ services:
       - 443:443
       - 80:80
     volumes:
-      - /etc/nginx/conf.d/my.qzitech.cn.pem:/etc/nginx/conf.d/server.pem
-      - /etc/nginx/conf.d/my.qzitech.cn.key:/etc/nginx/conf.d/server.key
+      - ../my.qzitech.cn.pem:/etc/nginx/conf.d/server.pem
+      - ../my.qzitech.cn.key:/etc/nginx/conf.d/server.key
 
 volumes:
   mysqldata:
