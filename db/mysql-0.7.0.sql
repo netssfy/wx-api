@@ -30,7 +30,7 @@ CREATE TABLE `cms_article`  (
   `image` varchar(255) CHARACTER SET utf8 NULL DEFAULT NULL COMMENT '文章首图',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `idx_title`(`title`) USING BTREE COMMENT '标题不得重复'
-) ENGINE = InnoDB AUTO_INCREMENT = 337 CHARACTER SET = utf8 COMMENT = 'CMS文章中心' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 337 CHARACTER SET = utf8mb4 COMMENT = 'CMS文章中心' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for sys_captcha
@@ -256,7 +256,7 @@ CREATE TABLE `wx_account`  (
   `token` varchar(32) CHARACTER SET utf8 NULL DEFAULT NULL COMMENT 'token',
   `aes_key` varchar(43) CHARACTER SET utf8 NULL DEFAULT NULL COMMENT 'aesKey',
   PRIMARY KEY (`appid`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COMMENT = '公众号账号' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COMMENT = '公众号账号' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for wx_msg
@@ -286,7 +286,7 @@ CREATE TABLE `wx_msg_reply_rule`  (
   `match_value` varchar(200) CHARACTER SET utf8 NOT NULL COMMENT '匹配的关键词、事件等',
   `exact_match` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否精确匹配',
   `reply_type` varchar(20) CHARACTER SET utf8 NOT NULL DEFAULT '1' COMMENT '回复消息类型',
-  `reply_content` varchar(1024) CHARACTER SET utf8 NOT NULL COMMENT '回复消息内容',
+  `reply_content` varchar(1024) CHARACTER SET utf8mb4 NOT NULL COMMENT '回复消息内容',
   `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '规则是否有效',
   `desc` varchar(255) CHARACTER SET utf8 NULL DEFAULT NULL COMMENT '备注说明',
   `effect_time_start` time(0) NULL DEFAULT '00:00:00' COMMENT '生效起始时间',
@@ -295,7 +295,7 @@ CREATE TABLE `wx_msg_reply_rule`  (
   `update_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
   PRIMARY KEY (`rule_id`) USING BTREE,
   INDEX `idx_appid`(`appid`) USING BTREE COMMENT 'appid'
-) ENGINE = InnoDB AUTO_INCREMENT = 36 CHARACTER SET = utf8 COMMENT = '自动回复规则' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 36 CHARACTER SET = utf8mb4 COMMENT = '自动回复规则' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of wx_msg_reply_rule
@@ -312,8 +312,8 @@ CREATE TABLE `wx_msg_template`  (
   `appid` char(20) CHARACTER SET utf8 NOT NULL COMMENT 'appid',
   `template_id` varchar(100) CHARACTER SET utf8 NOT NULL COMMENT '公众号模板ID',
   `name` varchar(50) CHARACTER SET utf8 NULL DEFAULT NULL COMMENT '模版名称',
-  `title` varchar(20) CHARACTER SET utf8 NULL DEFAULT NULL COMMENT '标题',
-  `content` text CHARACTER SET utf8 NULL COMMENT '模板内容',
+  `title` varchar(20) CHARACTER SET utf8mb4 NULL DEFAULT NULL COMMENT '标题',
+  `content` text CHARACTER SET utf8mb4 NULL COMMENT '模板内容',
   `data` json NULL COMMENT '消息内容',
   `url` varchar(255) CHARACTER SET utf8 NULL DEFAULT NULL COMMENT '链接',
   `miniprogram` json NULL COMMENT '小程序信息',
@@ -323,7 +323,7 @@ CREATE TABLE `wx_msg_template`  (
   UNIQUE INDEX `idx_name`(`name`) USING BTREE COMMENT '模板名称',
   INDEX `idx_status`(`status`) USING BTREE COMMENT '模板状态',
   INDEX `idx_appid`(`appid`) USING BTREE COMMENT 'appid'
-) ENGINE = InnoDB AUTO_INCREMENT = 62 CHARACTER SET = utf8 COMMENT = '消息模板' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 62 CHARACTER SET = utf8mb4 COMMENT = '消息模板' ROW_FORMAT = Dynamic;
 
 
 -- ----------------------------
@@ -360,7 +360,7 @@ CREATE TABLE `wx_template_msg_log`  (
   `send_result` varchar(255) CHARACTER SET utf8 NULL DEFAULT NULL COMMENT '发送结果',
   PRIMARY KEY (`log_id`) USING BTREE,
   INDEX `idx_appid`(`appid`) USING BTREE COMMENT 'appid'
-) ENGINE = InnoDB AUTO_INCREMENT = 116250 CHARACTER SET = utf8 COMMENT = '微信模版消息发送记录' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 116250 CHARACTER SET = utf8mb4 COMMENT = '微信模版消息发送记录' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for wx_user
