@@ -30,8 +30,8 @@ public class MenuHandler extends AbstractHandler {
         }
         String appid = WxMpConfigStorageHolder.get();
         logger.info("菜单事件：" + wxMessage.getEventKey());
-        msgReplyService.tryAutoReply(appid, true, wxMessage.getFromUser(), wxMessage.getEventKey());
-        return null;
+        MsgReplyService.AutoReplyResult result = msgReplyService.tryAutoReply(appid, true, wxMessage.getFromUser(), wxMessage.getEventKey());
+        return result.getOutMessage();
     }
 
 

@@ -3,6 +3,7 @@ package com.github.niefy.modules.wx.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.niefy.config.TaskExcutor;
+import com.github.niefy.modules.wx.controller.WxMpPortalController;
 import com.github.niefy.modules.wx.entity.MsgReplyRule;
 import com.github.niefy.modules.wx.entity.WxMsg;
 import com.github.niefy.modules.wx.service.MsgReplyRuleService;
@@ -14,12 +15,15 @@ import me.chanjar.weixin.common.api.WxConsts;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.kefu.WxMpKefuMessage;
+import me.chanjar.weixin.mp.bean.message.WxMpXmlMessage;
+import me.chanjar.weixin.mp.bean.message.WxMpXmlOutMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -51,12 +55,26 @@ public class MsgReplyServiceImpl implements MsgReplyService {
      * @return 是否已自动回复，无匹配规则则不自动回复
      */
     @Override
-    public boolean tryAutoReply(String appid, boolean exactMatch, String toUser, String keywords) {
+    public AutoReplyResult tryAutoReply(String appid, boolean exactMatch, String toUser, String keywords) {
         try {
             List<MsgReplyRule> rules = msgReplyRuleService.getMatchedRules(appid,exactMatch, keywords);
             if (rules.isEmpty()) {
-                return false;
+                return new AutoReplyResult(null, false);
             }
+
+            Optional<MsgReplyRule> syncReply = rules.stream().filter(r -> "transfer_customer_service".equals(r.getReplyType())).findFirst();
+            // sync reply
+            if (syncReply.isPresent()) {
+                WxMpXmlMessage inMessage = WxMpPortalController.WxContextInMessage.get();
+
+                return new AutoReplyResult(WxMpXmlOutMessage
+                    .TRANSFER_CUSTOMER_SERVICE()
+                    .fromUser(inMessage.getToUser())
+                    .toUser(inMessage.getFromUser())
+                    .build(), true);
+            }
+
+            // async reply
             long delay = 0;
             for (MsgReplyRule rule : rules) {
                 TaskExcutor.schedule(() -> {
@@ -65,11 +83,11 @@ public class MsgReplyServiceImpl implements MsgReplyService {
                 }, delay, TimeUnit.MILLISECONDS);
                 delay += autoReplyInterval;
             }
-            return true;
+            return new AutoReplyResult(null, true);
         } catch (Exception e) {
             log.error("自动回复出错：", e);
         }
-        return false;
+        return new AutoReplyResult(null, false);
     }
 
     @Override
@@ -184,5 +202,4 @@ public class MsgReplyServiceImpl implements MsgReplyService {
 
         wxMsgService.addWxMsg(WxMsg.buildOutMsg(WxConsts.KefuMsgType.IMAGE,toUser,json));
     }
-
 }

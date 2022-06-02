@@ -33,12 +33,12 @@ public class SubscribeHandler extends AbstractHandler {
         this.logger.info("appid:{}",appid);
         userService.refreshUserInfo(wxMessage.getFromUser(),appid);
 
-        msgReplyService.tryAutoReply(appid, true, wxMessage.getFromUser(), wxMessage.getEvent());
+        MsgReplyService.AutoReplyResult result = msgReplyService.tryAutoReply(appid, true, wxMessage.getFromUser(), wxMessage.getEvent());
 
         if (StringUtils.hasText(wxMessage.getEventKey())) {// 处理特殊事件，如用户扫描带参二维码关注
-            msgReplyService.tryAutoReply(appid, true, wxMessage.getFromUser(), wxMessage.getEventKey());
+            result = msgReplyService.tryAutoReply(appid, true, wxMessage.getFromUser(), wxMessage.getEventKey());
         }
-        return null;
+        return result.getOutMessage();
     }
 
     /**
@@ -49,11 +49,11 @@ public class SubscribeHandler extends AbstractHandler {
         //对关注事件和扫码事件分别处理
         String appid = WxMpConfigStorageHolder.get();
         userService.refreshUserInfo(wxMessage.getFromUser(),appid);
-        msgReplyService.tryAutoReply(appid, true, wxMessage.getFromUser(), wxMessage.getEvent());
+        MsgReplyService.AutoReplyResult result = msgReplyService.tryAutoReply(appid, true, wxMessage.getFromUser(), wxMessage.getEvent());
         if (StringUtils.hasText(wxMessage.getEventKey())) {
-            msgReplyService.tryAutoReply(appid, true, wxMessage.getFromUser(), wxMessage.getEventKey());
+            result = msgReplyService.tryAutoReply(appid, true, wxMessage.getFromUser(), wxMessage.getEventKey());
         }
-        return null;
+        return result.getOutMessage();
     }
 
 }

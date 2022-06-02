@@ -10,7 +10,10 @@ import me.chanjar.weixin.mp.bean.message.WxMpXmlOutMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * 微信消息
@@ -26,14 +29,16 @@ public class WxMpPortalController {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    public static ThreadLocal<WxMpXmlMessage> WxContextInMessage = new ThreadLocal<>();
+
     @GetMapping(produces = "text/plain;charset=utf-8")
+    @PostMapping("/post")
     @ApiOperation(value = "微信服务器的认证消息",notes = "公众号接入开发模式时腾讯调用此接口")
     public String authGet(@PathVariable String appid,
                           @RequestParam(name = "signature", required = false) String signature,
                           @RequestParam(name = "timestamp", required = false) String timestamp,
                           @RequestParam(name = "nonce", required = false) String nonce,
                           @RequestParam(name = "echostr", required = false) String echostr) {
-
         logger.info("\n接收到来自微信服务器的认证消息：[{}, {}, {}, {}]", signature,
             timestamp, nonce, echostr);
         if (StringUtils.isAnyBlank(signature, timestamp, nonce, echostr)) {
@@ -70,6 +75,7 @@ public class WxMpPortalController {
         if (encType == null) {
             // 明文传输的消息
             WxMpXmlMessage inMessage = WxMpXmlMessage.fromXml(requestBody);
+
             WxMpXmlOutMessage outMessage = this.route(appid,inMessage);
             if (outMessage == null) {
                 return "";
@@ -80,6 +86,7 @@ public class WxMpPortalController {
             // aes加密的消息
             WxMpXmlMessage inMessage = WxMpXmlMessage.fromEncryptedXml(requestBody, wxService.getWxMpConfigStorage(),
                 timestamp, nonce, msgSignature);
+
             logger.debug("\n消息解密后内容为：\n{} ", inMessage.toString());
             WxMpXmlOutMessage outMessage = this.route(appid,inMessage);
             if (outMessage == null) {
@@ -95,9 +102,12 @@ public class WxMpPortalController {
 
     private WxMpXmlOutMessage route(String appid,WxMpXmlMessage message) {
         try {
+            WxContextInMessage.set(message);
             return this.messageRouter.route(appid,message);
         } catch (Exception e) {
             logger.error("路由消息时出现异常！", e);
+        } finally {
+            WxContextInMessage.remove();
         }
 
         return null;

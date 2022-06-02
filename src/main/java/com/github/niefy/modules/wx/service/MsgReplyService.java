@@ -1,9 +1,15 @@
 package com.github.niefy.modules.wx.service;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import me.chanjar.weixin.common.api.WxConsts;
 import me.chanjar.weixin.common.error.WxErrorException;
+import me.chanjar.weixin.mp.bean.message.WxMpXmlOutMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 公众号消息处理
@@ -11,6 +17,13 @@ import org.slf4j.LoggerFactory;
  * WxJava客服消息文档：https://github.com/Wechat-Group/WxJava/wiki/MP_主动发送消息（客服消息）
  */
 public interface MsgReplyService {
+    @Data
+    @AllArgsConstructor
+    public static class AutoReplyResult {
+        WxMpXmlOutMessage outMessage;
+        boolean replied;
+    }
+
     Logger logger = LoggerFactory.getLogger(MsgReplyService.class);
 
     /**
@@ -23,7 +36,7 @@ public interface MsgReplyService {
      * @param keywords   匹配关键词
      * @return 是否已自动回复，无匹配规则则不自动回复
      */
-    boolean tryAutoReply(String appid, boolean exactMatch, String toUser, String keywords);
+    AutoReplyResult tryAutoReply(String appid, boolean exactMatch, String toUser, String keywords);
 
     default void reply(String toUser,String replyType, String replyContent){
         try {

@@ -285,7 +285,7 @@ CREATE TABLE `wx_msg_reply_rule`  (
   `rule_name` varchar(20) CHARACTER SET utf8 NOT NULL COMMENT '规则名称',
   `match_value` varchar(200) CHARACTER SET utf8 NOT NULL COMMENT '匹配的关键词、事件等',
   `exact_match` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否精确匹配',
-  `reply_type` varchar(20) CHARACTER SET utf8 NOT NULL DEFAULT '1' COMMENT '回复消息类型',
+  `reply_type` varchar(64) CHARACTER SET utf8 NOT NULL DEFAULT '1' COMMENT '回复消息类型',
   `reply_content` varchar(1024) CHARACTER SET utf8mb4 NOT NULL COMMENT '回复消息内容',
   `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '规则是否有效',
   `desc` varchar(255) CHARACTER SET utf8 NULL DEFAULT NULL COMMENT '备注说明',
