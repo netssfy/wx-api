@@ -9,3 +9,7 @@ springfox:
     documentation:
         swagger-ui:
             enabled: true
+
+wx:
+    mp:
+        oauthRedirectUrl: https://wechat.qzitech.cn/wx/mp/code-callback

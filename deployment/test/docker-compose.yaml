@@ -4,7 +4,7 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_DATABASE: wx
-      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_ROOT_PASSWORD: sdf^8dks&*^d0sdf92&(d-*0
     ports:
       - 3306:3306
     volumes:
@@ -20,7 +20,7 @@ services:
       MYSQL_IP: mysql
       MYSQL_PORT: 3306
       MYSQL_USERNAME: root
-      MYSQL_PASSWORD: 123456
+      MYSQL_PASSWORD: sdf^8dks&*^d0sdf92&(d-*0
       PROFILE_ACTIVE: dev
 
   tb-wx-manage:

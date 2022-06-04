@@ -28,7 +28,7 @@ public class FilterConfig {
         return registration;
     }
 
-    @Bean
+//    @Bean
     public FilterRegistrationBean xssFilterRegistration() {
         FilterRegistrationBean registration = new FilterRegistrationBean();
         registration.setDispatcherTypes(DispatcherType.REQUEST);
