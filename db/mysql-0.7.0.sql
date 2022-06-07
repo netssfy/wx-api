@@ -387,4 +387,22 @@ CREATE TABLE `wx_user`  (
   INDEX `idx_appid`(`appid`) USING BTREE COMMENT 'appid'
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COMMENT = '用户表' ROW_FORMAT = Dynamic;
 
+-- ----------------------------
+-- Table structure for wx_user_ex
+-- ----------------------------
+DROP TABLE IF EXISTS `wx_user_ex`;
+CREATE TABLE `wx_user_ex` (
+    `openid` varchar(50) NOT NULL
+    `unionid` varchar(50) NULL,
+    `access_token` varchar(256) NOT NULL,
+    `refresh_token` varchar(256) NOT NULL,
+    `expires_in` int NOT NULL,
+    `scope` varchar(32) NOT NULL,
+    `created_at` datetime(0) NOT NULL,
+    `updated_at` datetime(0) NOT NULL
+    PRIMARY KEY (`openid`)
+    INDEX `idx_unionid`(`unionid`)
+) ENGINE = InnoDB
+
 SET FOREIGN_KEY_CHECKS = 1;
+
