@@ -1,6 +1,7 @@
 package com.github.niefy.modules.wx.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.niefy.modules.wx.dao.WxUserExRepo;
@@ -137,7 +138,14 @@ public class RedirectController {
 
     if (wxMpConfigStorage.getAppId().equals(request.getWxAppId()) &&
         wxMpConfigStorage.getSecret().equals(request.getWxAppSecret())) {
-      String accessToken = wxMpConfigStorage.getAccessToken();
+      String accessToken = null;
+      try {
+        accessToken = wxMpService.getAccessToken();
+      } catch (WxErrorException e) {
+        log.error(e.getMessage(), e);
+        json(resp, "request failed on error code " + e.getError().getErrorCode());
+        return;
+      }
       json(resp, new WxAccessTokenResponse(accessToken, null));
     } else {
       json(resp, new StatusInfo(-1, "appid or appsecret is not correct"));
@@ -145,7 +153,7 @@ public class RedirectController {
   }
 
   @GetMapping("/mp/wxusertoken")
-  public void userToken(@RequestParam(required = false) String openid, HttpServletResponse resp) throws IOException {
+  public void userToken(@RequestParam() String openid, HttpServletResponse resp) throws IOException {
     WxUserEx wxUserEx = wxUserExRepo.findById(openid).orElse(null);
     if (wxUserEx == null) {
       json(resp, new StatusInfo(-1, "access token for this openid is not authorized yet, please get user permission"));
@@ -187,6 +195,7 @@ public class RedirectController {
   public void userInfo(@RequestParam(required = false) String openid, HttpServletResponse resp) throws IOException {
     if (!StringUtils.hasLength(openid)) {
       json(resp, new ErrorInfo(100, "参数不正确"));
+      return;
     }
 
     try {
@@ -214,7 +223,7 @@ public class RedirectController {
           wxUserEx.setUnionId(wxMpUser.getUnionId());
           wxUserExRepo.save(wxUserEx);
         }
-        json(resp, wxMpUser);
+        json(resp, new WxMpUserDto(wxMpUser));
       }
     } catch (WxErrorException e) {
       log.error(e.getMessage(), e);
@@ -258,7 +267,7 @@ public class RedirectController {
 
   private void json(HttpServletResponse resp, Object data) throws IOException {
     resp.setContentType("application/json;charset=utf-8");
-    resp.getWriter().write(JSON.toJSONString(data));
+    resp.getWriter().write(JSON.toJSONString(data, SerializerFeature.WriteMapNullValue));
   }
 
   @Data
@@ -290,6 +299,48 @@ public class RedirectController {
       setUnionId(data.getUnionId());
       setPrivileges(data.getPrivileges());
     }
+  }
+
+  @Data
+  public static class WxMpUserDto {
+    public WxMpUserDto(WxMpUser wxMpUser) {
+      subscribe = wxMpUser.getSubscribe() ? 1 : 0;
+      openId = wxMpUser.getOpenId();
+      nickname = wxMpUser.getNickname();
+      language = wxMpUser.getLanguage();
+      headImgUrl = wxMpUser.getHeadImgUrl();
+      subscribeTime = wxMpUser.getSubscribeTime();
+      unionId = wxMpUser.getUnionId();
+      remark = wxMpUser.getRemark();
+      groupId = wxMpUser.getGroupId();
+      tagIds = wxMpUser.getTagIds();
+      privileges = wxMpUser.getPrivileges();
+      subscribeScene = wxMpUser.getSubscribeScene();
+      qrScene = wxMpUser.getQrScene();
+      qrSceneStr = wxMpUser.getQrSceneStr();
+    }
+
+    private int subscribe;
+    private String openId;
+
+    private String nickname;
+    private String language;
+
+    private String headImgUrl;
+    private Long subscribeTime;
+
+    private String unionId;
+    private String remark;
+    private Integer groupId;
+    private Long[] tagIds;
+
+    private String[] privileges;
+
+    private String subscribeScene;
+
+    private String qrScene;
+
+    private String qrSceneStr;
   }
 
   @Data

@@ -392,15 +392,15 @@ CREATE TABLE `wx_user`  (
 -- ----------------------------
 DROP TABLE IF EXISTS `wx_user_ex`;
 CREATE TABLE `wx_user_ex` (
-    `openid` varchar(50) NOT NULL
+    `openid` varchar(50) NOT NULL,
     `unionid` varchar(50) NULL,
     `access_token` varchar(256) NOT NULL,
     `refresh_token` varchar(256) NOT NULL,
     `expires_in` int NOT NULL,
     `scope` varchar(32) NOT NULL,
     `created_at` datetime(0) NOT NULL,
-    `updated_at` datetime(0) NOT NULL
-    PRIMARY KEY (`openid`)
+    `updated_at` datetime(0) NOT NULL,
+    PRIMARY KEY (`openid`),
     INDEX `idx_unionid`(`unionid`)
 ) ENGINE = InnoDB
 
