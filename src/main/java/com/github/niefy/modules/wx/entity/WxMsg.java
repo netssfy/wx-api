@@ -8,6 +8,8 @@ import me.chanjar.weixin.common.api.WxConsts;
 import me.chanjar.weixin.mp.bean.message.WxMpXmlMessage;
 import me.chanjar.weixin.mp.util.WxMpConfigStorageHolder;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -19,6 +21,7 @@ import java.util.Date;
  */
 @Data
 @TableName("wx_msg")
+@Entity
 public class WxMsg implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -26,6 +29,7 @@ public class WxMsg implements Serializable {
 	 * 主键
 	 */
 	@TableId
+	@Id
 	private Long id;
 	private String appid;
 	/**
@@ -40,6 +44,12 @@ public class WxMsg implements Serializable {
 	 * 消息类型
 	 */
 	private String msgType;
+
+	private String event;
+
+	private String eventKey;
+
+	private String content;
 	/**
 	 * 消息详情
 	 */
@@ -88,6 +98,8 @@ public class WxMsg implements Serializable {
 		}else if(WxConsts.XmlMsgType.EVENT.equals(this.msgType)){
 			this.detail.put("event",wxMessage.getEvent());
 			this.detail.put("eventKey",wxMessage.getEventKey());
+			this.event = wxMessage.getEvent();
+			this.eventKey = wxMessage.getEventKey();
 		}
 	}
 	public static WxMsg buildOutMsg(String msgType,String openid,JSONObject detail){

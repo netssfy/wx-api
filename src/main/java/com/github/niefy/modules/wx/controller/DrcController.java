@@ -2,14 +2,13 @@ package com.github.niefy.modules.wx.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.niefy.modules.wx.dao.WxMsgRepo;
 import com.github.niefy.modules.wx.dao.WxUserExRepo;
-import com.github.niefy.modules.wx.entity.WxUser;
+import com.github.niefy.modules.wx.entity.WxMsg;
 import com.github.niefy.modules.wx.entity.WxUserEx;
 import com.github.niefy.modules.wx.service.WxAccountService;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +18,6 @@ import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.result.WxMpUser;
 import me.chanjar.weixin.mp.config.WxMpConfigStorage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
@@ -30,16 +27,17 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.URLEncoder;
+import java.math.BigInteger;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
-public class RedirectController {
+public class DrcController {
 
 //  private Logger logger = LoggerFactory.getLogger(RedirectController.class);
 
@@ -54,6 +52,9 @@ public class RedirectController {
 
   @Autowired
   private WxUserExRepo wxUserExRepo;
+
+  @Autowired
+  private WxMsgRepo wxMsgRepo;
 
   private final String state = "tb-wx-api";
 
@@ -160,8 +161,8 @@ public class RedirectController {
       return;
     }
 
-    boolean currentAccessTokenValid = wxUserEx.getUpdatedAt().plusSeconds(7000).isBefore(Instant.now());
-    boolean currentRefreshTokenValid = wxUserEx.getCreatedAt().plus(29, ChronoUnit.DAYS).isBefore(Instant.now());
+    boolean currentAccessTokenValid = wxUserEx.getUpdatedAt().plusSeconds(7000).isAfter(Instant.now());
+    boolean currentRefreshTokenValid = wxUserEx.getCreatedAt().plus(29, ChronoUnit.DAYS).isAfter(Instant.now());
 
     if (currentAccessTokenValid) {
       json(resp, wxUserEx);
@@ -231,14 +232,62 @@ public class RedirectController {
     }
   }
 
+  @GetMapping("/wx/statistic")
+  public String getEventStatistic(@RequestParam(required = false) Integer n) {
+    if (n == null) {
+      n = 10;
+    }
+
+    n = Integer.max(n, 1000);
+    n = Integer.min(n, 10);
+
+    Instant now = Instant.now();
+
+    List<EventStatistic> eventStatistic = wxMsgRepo.getEventStatistic(now.minus(n, ChronoUnit.DAYS), now)
+        .stream()
+        .map(EventStatistic::new)
+        .collect(Collectors.toList());
+
+    StringBuilder sb = new StringBuilder();
+    for (EventStatistic es : eventStatistic) {
+      sb.append(String.format("%s,%s,%s</br>", es.getDate(), es.getEvent(), es.getCount()));
+    }
+
+    return sb.toString();
+  }
+
+  @GetMapping("/wx/scan_statistic")
+  public String getScanEventStatistic(@RequestParam(required = false) Integer n) {
+    if (n == null) {
+      n = 10;
+    }
+
+    n = Integer.max(n, 1000);
+    n = Integer.min(n, 10);
+
+    Instant now = Instant.now();
+
+    List<EventStatistic> eventStatistic = wxMsgRepo.getScanEventStatistic(now.minus(n, ChronoUnit.DAYS), now)
+        .stream()
+        .map(EventStatistic::new)
+        .collect(Collectors.toList());
+
+    StringBuilder sb = new StringBuilder();
+    for (EventStatistic es : eventStatistic) {
+      sb.append(String.format("%s,%s,%s</br>", es.getDate(), es.getEvent(), es.getCount()));
+    }
+
+    return sb.toString();
+  }
+
 //  @GetMapping("/mp/mock-wx-server")
 //  public void Mock(@RequestParam("redirect_uri") String uri, HttpServletResponse resp) throws IOException {
 //    resp.sendRedirect(uri + "&code=mockcode&state=mockstate");
 //  }
 
   private WxOAuth2UserInfo getOAuth2UserInfo(WxUserEx wxUserEx) throws WxErrorException {
-    boolean currentAccessTokenValid = wxUserEx.getUpdatedAt().plusSeconds(7000).isBefore(Instant.now());
-    boolean currentRefreshTokenValid = wxUserEx.getCreatedAt().plus(29, ChronoUnit.DAYS).isBefore(Instant.now());
+    boolean currentAccessTokenValid = wxUserEx.getUpdatedAt().plusSeconds(7000).isAfter(Instant.now());
+    boolean currentRefreshTokenValid = wxUserEx.getCreatedAt().plus(29, ChronoUnit.DAYS).isAfter(Instant.now());
 
     WxOAuth2AccessToken wxOAuth2AccessToken = null;
 
@@ -358,5 +407,19 @@ public class RedirectController {
 
     @JsonProperty("validsince")
     private Instant validSince;
+  }
+
+  @Data
+  @NoArgsConstructor
+  public static class EventStatistic {
+    public EventStatistic(Map<String, Object> data) {
+      this.event = (String) data.get("event");
+      this.count = String.valueOf((BigInteger) data.get("count"));
+      this.date = (Date) data.get("date");
+    }
+
+    private String event;
+    private String count;
+    private Date date;
   }
 }

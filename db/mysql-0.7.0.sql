@@ -268,6 +268,8 @@ CREATE TABLE `wx_msg`  (
   `openid` varchar(32) CHARACTER SET utf8 NOT NULL COMMENT '微信用户ID',
   `in_out` tinyint(1) UNSIGNED NULL DEFAULT NULL COMMENT '消息方向',
   `msg_type` char(25) CHARACTER SET utf8 NULL DEFAULT NULL COMMENT '消息类型',
+  `event` varchar(64) CHARACTER SET utf8 NULL DEFAULT NULL,
+  `event_key` varchar(64) CHARACTER SET utf8 NULL DEFAULT NULL,
   `detail` json NULL COMMENT '消息详情',
   `create_time` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE,
