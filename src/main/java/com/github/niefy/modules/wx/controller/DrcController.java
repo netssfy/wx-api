@@ -232,7 +232,7 @@ public class DrcController {
     }
   }
 
-  @GetMapping("/wx/statistic")
+  @GetMapping("/statistic")
   public String getEventStatistic(@RequestParam(required = false) Integer n) {
     if (n == null) {
       n = 10;
@@ -256,7 +256,7 @@ public class DrcController {
     return sb.toString();
   }
 
-  @GetMapping("/wx/scan_statistic")
+  @GetMapping("/scan_statistic")
   public String getScanEventStatistic(@RequestParam(required = false) Integer n) {
     if (n == null) {
       n = 10;
